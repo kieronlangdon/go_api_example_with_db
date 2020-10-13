@@ -1,4 +1,4 @@
-### Local postgres setup
+### Local postgres db setup
 ```
 docker pull postgres   
 docker pull postgres:[tag_you_want]   
