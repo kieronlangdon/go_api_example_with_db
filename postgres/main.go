@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/rs/cors"
-	
+	"gorm.io/gorm/clause"
 )
 
 // Author Struct
@@ -106,6 +106,53 @@ func deleteBook(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&books)
 }
 
+//Create an author
+func createAuthor(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var author Author
+	_ = json.NewDecoder(r.Body).Decode(&author)
+	params := r.URL.Query()
+	firstname := params.Get("firstname")
+	lastname := params.Get("lastname")
+	if len(firstname) == 0 || len(lastname) == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	db.Create(&Author{Firstname: firstname, Lastname: lastname})
+	db.Find(&authors)
+	json.NewEncoder(w).Encode(&authors)
+}
+
+//Create a book
+func createBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var book Book
+	_ = json.NewDecoder(r.Body).Decode(&book)
+	params := r.URL.Query()
+	isbn := params.Get("isbn")
+	title := params.Get("title")
+	if len(isbn) == 0 || len(title) == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	db.Create(&Book{Isbn: isbn, Title: title})
+	db.Find(&books)
+	json.NewEncoder(w).Encode(&books)
+}
+
+//InitDB initialization
+func InitDB() {
+	db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres sslmode=disable password=docker")
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+}
+
 func main() {
 	log.SetPrefix("LOG: ")
 	log.SetFlags(log.Ldate | log.Ltime)
@@ -119,13 +166,8 @@ func main() {
 		log.Printf("Readyz probe is positive.")
 	}()
 	router := mux.NewRouter()
-	db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres sslmode=disable password=docker")
-	if err != nil {
-		panic("failed to connect database")
-	}
-
+	InitDB()
 	defer db.Close()
-
 	db.DropTableIfExists(&Book{})
 	db.DropTableIfExists(&Author{})
 
@@ -147,6 +189,10 @@ func main() {
 	router.HandleFunc("/api/books", getBooks).Methods("GET")
 	router.HandleFunc("/api/authors", getAllAuthors).Methods("GET")
 	router.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
+
+	router.HandleFunc("/api/authors/", createAuthor).Methods("POST")
+	router.HandleFunc("/api/books/", createBook).Methods("POST")
+
 	router.HandleFunc("/healthz", healthz)
 	router.HandleFunc("/readyz", readyz(isReady))
 
