@@ -47,8 +47,19 @@ DELETE api/books/{id}
 ```
 
 ### Create Book
-TBC
-
+``` bash 
+POST api/books/   
+Params =    
+isbn=12346   
+title=Adentures Of Mick
+```
+### Create Author
+``` bash 
+POST api/authors/   
+Params =    
+firstname=Tony   
+lastname=O'Holohan
+```
 ### Update Book
 TBC
 
