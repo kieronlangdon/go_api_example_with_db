@@ -2,15 +2,18 @@ name: Go
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
 
   build:
     name: Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: postgres
     steps:
 
     - name: Set up Go 1.x
@@ -29,9 +32,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-
     - name: Build
       run: go build -v .
 
     - name: Test
-      run: go test -v .
+      run: go test -v -run Unit 
