@@ -149,7 +149,7 @@ Get deployment yaml
 `minikube kubectl get deploy testdev -- -o yaml --export >> testdev.yaml`   
 In testdev.yaml   
 `imagePullPolicy: Always`   
-change to   
+change to    
 `imagePullPolicy: Never`   
 Apply yaml   
 `minikube kubectl apply -- -f testdev.yaml`   
