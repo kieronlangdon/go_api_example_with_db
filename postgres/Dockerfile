@@ -20,7 +20,7 @@ RUN go get -v -t -d ./...
 # Build the package tests
 RUN if [ ! -d "package.test" ] ; then echo Test package does not exist ; else rm-rf package.test ; fi
 #RUN go test -c . -o package.test
-RUN go test -v -run Unit
+#RUN go test -v -run Unit
 
 # Build the go app
 RUN go build -o ./postgres *.go
