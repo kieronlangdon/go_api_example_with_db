@@ -51,7 +51,7 @@ func getAuthorsExtra(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	db.Find(&authors)
-	db.Preload("Books").Preload(clause.Associations).Find(&authors)
+	//db.Preload("Books").Preload(clause.Associations).Find(&authors)
 	json.NewEncoder(w).Encode(&authors)
 	log.Printf("Get all books issued")
 
@@ -146,7 +146,7 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 
 //InitDB initialization
 func InitDB() {
-	db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres sslmode=disable password=docker")
+	db, err = gorm.Open("postgres", "host=postgresql port=5432 user=postgres dbname=postgres sslmode=disable password=docker")
 	if err != nil {
 		panic("failed to connect database")
 	}
